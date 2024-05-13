@@ -1,5 +1,5 @@
 import * as cdk from "aws-cdk-lib";
-import { Bucket } from "aws-cdk-lib/aws-s3/lib";
+import { aws_s3 as s3, aws_ec2 as ec2, aws_ecs as ecs, aws_logs as logs } from "aws-cdk-lib";
 import { Construct } from "constructs";
 
 export class RapidcompactMarketplaceStack extends cdk.Stack {
@@ -8,10 +8,14 @@ export class RapidcompactMarketplaceStack extends cdk.Stack {
 
     const name = "RCMarketplace";
 
-    new cdk.aws_ecs.Cluster(this, name + "Cluster", {});
+    const vpc = ec2.Vpc.fromLookup(this, "VPC", {
+      isDefault: true,
+    });
 
-    const inputBucket = new Bucket(this, "InputBucket", {});
-    const outputBucket = new Bucket(this, "OutputBucket", {});
+    new cdk.aws_ecs.Cluster(this, name + "Cluster", { vpc });
+
+    const inputBucket = new s3.Bucket(this, "InputBucket", {});
+    const outputBucket = new s3.Bucket(this, "OutputBucket", {});
 
     const executionRole = new cdk.aws_iam.Role(this, "EcsTaskExecutionRole", {
       assumedBy: new cdk.aws_iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
@@ -44,6 +48,7 @@ export class RapidcompactMarketplaceStack extends cdk.Stack {
     const logGroup = new cdk.aws_logs.LogGroup(this, name + "LogGroup", {
       logGroupName: name + "Logs",
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: logs.RetentionDays.ONE_MONTH,
     });
 
     const taskDefinition = new cdk.aws_ecs.FargateTaskDefinition(this, name + "Task", { executionRole, taskRole });
