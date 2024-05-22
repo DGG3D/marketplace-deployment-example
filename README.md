@@ -14,14 +14,14 @@ If you already have either of those and want to use them make sure to adjust buc
 After you have successfully deployed this stack you can launch your tasks to optimize your assets in the following way.
 ```bash
 aws ecs run-task \
-        --cluster CLUSTER-NAME \
-        --task-definition TASK-DEFINITION-NAME \
-        --launch-type FARGATE \
-        --network-configuration "awsvpcConfiguration={subnets=[SUBNET],securityGroups=[SECURITYGROUP],assignPublicIp=ENABLED}" \
-        --overrides '{"containerOverrides":[{"command":["/bin/sh", "-c", "aws s3 cp INPUT-S3PATH . && /rpdx/rpdx -i INPUT-FILENAME -e OUTPUT-FILENAME && aws s3 cp OUTPUT-FILENAME s3://OUTPUT-BUCKET/OUTPUT-FILENAME"]}]}'
+	--cluster CLUSTER_NAME \
+	--task-definition TASK_DEFINITION_NAME \
+	--launch-type FARGATE \
+	--network-configuration "awsvpcConfiguration={subnets=[SUBNET],securityGroups=[SECURITYGROUP],assignPublicIp=DISABLED}" \
+	--overrides '{"containerOverrides":[{"name":"CONTAINER_NAME", "command":["/bin/sh", "-c", "aws s3 cp s3://INPUT-BUCKET/INPUT_FILENAME . && /rpdx/rpdx -i INPUT_FILENAME -e OUTPUT_FILENAME && aws s3 cp OUTPUT_FILENAME s3://OUTPUT_BUCKET/OUTPUT_FILENAME"]}]}'
 ```
 
-*Note that you have to replace the following strings based on your setup: `CLUSTER-NAME` (of the cluster we created), `TASK-DEFINITION-NAME` (name of the task definition we created), `SUBNET` (the subnet you want this task to run in), `SECURITYGROUP` (the security group you want this task to run with), `INPUT-BUCKET`, `OUTPUT-BUCKET`, `INPUT-FILENAME`, `OUTPUT-FILENAME`.*
+Note that you have to replace the following strings based on your setup: *CLUSTER_NAME* (of the cluster we created), *TASK_DEFINITION_NAME* (name of the task definition we created in step 5), *CONTAINER_NAME* (the name of the container to run the task on, see step 5), *SUBNET* (the ID of the subnet to run the task in, see step 6), *SECURITYGROUP* (the security group to run the task with, see step 7), *INPUT_BUCKET*, *OUTPUT_BUCKET*, *INPUT_FILENAME* (make sure your input bucket contains your input file with this name), *OUTPUT_FILENAME* (you can choose this freely as it will be created on the output bucket).
 
 ## Useful CDK commands
 
