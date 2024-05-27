@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
-import { aws_s3 as s3, aws_ec2 as ec2, aws_ecs as ecs, aws_logs as logs } from "aws-cdk-lib";
+import { aws_s3 as s3, aws_ec2 as ec2, aws_ecs as ecs, aws_logs as logs, CfnOutput } from "aws-cdk-lib";
+import { Peer, Port } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 
 export class RapidcompactMarketplaceStack extends cdk.Stack {
@@ -62,6 +63,18 @@ export class RapidcompactMarketplaceStack extends cdk.Stack {
       }),
       memoryLimitMiB: 512,
       cpu: 256,
+    });
+
+    // SecurityGroup and Subnet for the ECS task-run command
+    const securityGroup = new cdk.aws_ec2.SecurityGroup(this, "TaskRunSG", { vpc, allowAllOutbound: true });
+    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(443), "Allow HTTPS access");
+    new CfnOutput(this, "SecurityGroupId", {
+      value: securityGroup.securityGroupId,
+      description: "The ID of the security group",
+    });
+    new CfnOutput(this, "PublicSubnetId", {
+      value: vpc.publicSubnets[0].subnetId,
+      description: "The ID of the security group",
     });
   }
 }
