@@ -17,7 +17,7 @@ aws ecs run-task \
 	--cluster CLUSTER_NAME \
 	--task-definition TASK_DEFINITION_NAME \
 	--launch-type FARGATE \
-	--network-configuration "awsvpcConfiguration={subnets=[SUBNET],securityGroups=[SECURITYGROUP],assignPublicIp=DISABLED}" \
+	--network-configuration "awsvpcConfiguration={subnets=[SUBNET],securityGroups=[SECURITYGROUP],assignPublicIp=ENABLED}" \
 	--overrides '{"containerOverrides":[{"name":"CONTAINER_NAME", "command":["/bin/sh", "-c", "aws s3 cp s3://INPUT-BUCKET/INPUT_FILENAME . && /rpdx/rpdx -i INPUT_FILENAME -e OUTPUT_FILENAME && aws s3 cp OUTPUT_FILENAME s3://OUTPUT_BUCKET/OUTPUT_FILENAME"]}]}'
 ```
 
